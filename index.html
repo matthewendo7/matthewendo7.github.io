@@ -1,0 +1,313 @@
+
+<!-- Code from d3-graph-gallery.com -->
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src='https://d3js.org/d3.v5.min.js'></script>
+
+<head>
+<style>
+h1.pos{
+  position: relative;
+  left: 25px;
+}
+button.pos0{
+  position: relative;
+  left: 115px;
+  width: 160px;
+}
+button.pos1{
+  position: relative;
+  left: 25px;
+  width: 160px;
+}
+button.pos2{
+  position: relative;
+  left: 40px;
+  width: 160px;
+}
+
+div.text_box {
+  position: absolute;
+  top: 460px;
+  left: 420px;
+  width: 340px;
+  height: 315px;
+  border: 3px solid #000000;
+}
+
+</style>
+<h1 class="pos"> Politics in COVID-19 in the United States of America</h1>
+</head>
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<!-- Add 2 buttons -->
+<br></br>
+<button class="pos0" onclick="update(us_state)">All States</button>
+<br></br>
+<button class="pos1" onclick="update(dem_gov)">Democrat Governors</button>
+<button class="pos2" onclick="update(rep_gov)">Republican Governors</button>
+<br></br>
+<button class="pos1" onclick="update(dem_pres)">Voted for Clinton (2016)</button>
+<button class="pos2" onclick="update(rep_pres)">Voted for Trump (2016)</button>
+<br></br>
+<button class="pos1" onclick="update(northeast)">Northeast</button>
+<button class="pos2" onclick="update(south)">South</button>
+<br></br>
+<button class="pos1" onclick="update(west)">West</button>
+<button class="pos2" onclick="update(midwest)">Midwest</button>
+
+<div class="text_box">The US Federal Goverment has generally left it up to the individual states on how they wish to deal with the COVID-19 pandemic. However, political affiliations and voting patterns for members of each state have had a dramatic influence on the government policies and/or public opinion of the pandemic, which has resulted drastic differences in how individual states are performing with regards to the COVID-19 pandemic. <br><br> Utilize the buttons to see the influence of political affiliations and voting patterns from the previous presidential election has had on the how states are performing in response to the COVID-19 pandemic. Additionally, scroll over the graph to see the COVID-19 states of individual states during the pandemic.</div>
+
+<body onload='init()'>
+
+
+<script>
+
+//set the dimensions and margins of the graph
+var margin = {top: 10, right: 30, bottom: 30, left: 60},
+    width = 780 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
+
+//append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// create a tooltip
+  var Tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+    .style("width", ("200px"))
+    .style("position", "absolute")
+    //.style("left", "25px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var mouseover = function(d) {
+    Tooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+  }
+  var mousemove = function(d) {
+    Tooltip
+      .html(function() {return "State: " + d.state + "<br>" +
+                               "Date: " + d.date + "<br>" +
+                               "Cases: " + d.cases;})
+      .style("left", (d3.mouse(this)[0]+70) + "px")
+      .style("top", (d3.mouse(this)[1]) + "px")
+  }
+  var mouseleave = function(d) {
+    Tooltip
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 0)
+  }
+
+ var the_data;
+
+  const pop_density = {'Alabama': 94.4, 'Alaska': 1.2, 'Arizona': 56.3, 'Arkansas': 56.0, 'California': 239.1, 'Colorado': 48.5, 'Connecticut': 738.1, 'Delaware': 460.8, 'District of Columbia': 9856.5, 'Florida': 350.6, 'Georgia': 168.4, 'Hawaii': 211.8, 'Idaho': 19.0, 'Illinois': 231.1, 'Indiana': 181.0, 'Iowa': 54.5, 'Kansas': 34.9, 'Kentucky': 109.9, 'Louisiana': 104.9, 'Maine': 43.1, 'Maryland': 594.8, 'Massachusetts': 839.4, 'Michigan': 174.8, 'Minnesota': 66.6, 'Mississippi': 63.2, 'Missouri': 87.1, 'Montana': 6.8, 'Nebraska': 23.8, 'Nevada': 24.6, 'New Hampshire': 147.0, 'New Jersey': 1195.5, 'New Mexico': 17.0, 'New York': 411.2, 'North Carolina': 196.1, 'North Dakota': 9.7, 'Ohio': 282.3, 'Oklahoma': 54.7, 'Oregon': 39.9, 'Pennsylvania': 283.9, 'Rhode Island': 1018.1, 'South Carolina': 153.9, 'South Dakota': 10.7, 'Tennessee': 153.9, 'Texas': 96.3, 'Utah': 33.6, 'Vermont': 67.9, 'Virginia': 202.6, 'Washington': 101.2, 'West Virginia': 77.1, 'Wisconsin': 105.0, 'Wyoming': 5.8, 'Puerto Rico': 1088.2};
+
+  const populations = {'United States': 328239523, 'Northeast Region': 55982803, 'Midwest Region': 68329004, 'South Region': 125580448, 'West Region': 78347268, 'Alabama': 4903185, 'Alaska': 731545, 'Arizona': 7278717, 'Arkansas': 3017804, 'California': 39512223, 'Colorado': 5758736, 'Connecticut': 3565287, 'Delaware': 973764, 'District of Columbia': 705749, 'Florida': 21477737, 'Georgia': 10617423, 'Hawaii': 1415872, 'Idaho': 1787065, 'Illinois': 12671821, 'Indiana': 6732219, 'Iowa': 3155070, 'Kansas': 2913314, 'Kentucky': 4467673, 'Louisiana': 4648794, 'Maine': 1344212, 'Maryland': 6045680, 'Massachusetts': 6892503, 'Michigan': 9986857, 'Minnesota': 5639632, 'Mississippi': 2976149, 'Missouri': 6137428, 'Montana': 1068778, 'Nebraska': 1934408, 'Nevada': 3080156, 'New Hampshire': 1359711, 'New Jersey': 8882190, 'New Mexico': 2096829, 'New York': 19453561, 'North Carolina': 10488084, 'North Dakota': 762062, 'Ohio': 11689100, 'Oklahoma': 3956971, 'Oregon': 4217737, 'Pennsylvania': 12801989, 'Rhode Island': 1059361, 'South Carolina': 5148714, 'South Dakota': 884659, 'Tennessee': 6829174, 'Texas': 28995881, 'Utah': 3205958, 'Vermont': 623989, 'Virginia': 8535519, 'Washington': 7614893, 'West Virginia': 1792147, 'Wisconsin': 5822434, 'Wyoming': 578759, 'Puerto Rico': 3193694};
+
+  const us_state = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kentucky', 'Maryland', 'Massachusetts', 'Mississippi', 'Missouri', 'Nebraska', 'New Hampshire', 'North Dakota', 'Ohio', 'Oklahoma', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Wyoming',
+                    'California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Kansas', 'Louisiana', 'Maine', 'Michigan', 'Minnesota', 'Montana', 'Nevada', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'Oregon', 'Pennsylvania', 'Rhode Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'District of Columbia'];
+  const rep_gov = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kentucky', 'Maryland', 'Massachusetts', 'Mississippi', 'Missouri', 'Nebraska', 'New Hampshire', 'North Dakota', 'Ohio', 'Oklahoma', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Wyoming'];
+  const dem_gov = ['California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Kansas', 'Louisiana', 'Maine', 'Michigan', 'Minnesota', 'Montana', 'Nevada', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'Oregon', 'Pennsylvania', 'Rhode Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'District of Columbia']
+
+  const rep_pres = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Michigan', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Pennsylvania', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'West Virginia', 'Wisconsin', 'Wyoming'];
+  const dem_pres = ['California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Maine', 'Maryland', 'Massachusetts', 'Minnesota', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'Oregon', 'Rhode Island', 'Vermont', 'Virginia', 'Washington', 'District of Columbia']
+
+  const northeast = ['Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania', 'Rhode Island', 'Vermont']
+  const south = ['District of Columbia', 'Alabama', 'Arkansas', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Maryland', 'Mississippi', 'North Carolina', 'Oklahoma', 'South Carolina', 'Tennessee', 'Texas', 'Virginia', 'West Virginia']
+  const midwest = ['Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin']
+  const west = ['Alaska', 'Arizona', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'New Mexico', 'Oregon', 'Utah', 'Washington', 'Wyoming']
+
+async function init () {
+  const data = await d3.csv(
+    "https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv");
+
+  the_data = data;
+
+  var state_data = data.filter(function(d) {return us_state.includes(d.state);})
+  //const state_data = data.filter(function(d) {return us_state.includes(d.state);})
+
+  var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d) { return d.state;}).sortKeys(d3.ascending)//if (us_state.includes(d.state)) return d.state;})
+    .entries(state_data);
+
+
+
+  var x = d3.scaleTime()
+    .domain(d3.extent(state_data, function(d) { return new Date(d.date); }))
+    .range([ 0, width ]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).ticks(5));
+
+    svg.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Date");
+
+  var y = d3.scaleLinear()
+    .domain([0, 25000])//d3.max(data, function(d) { return +d.cases; })])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+    // Add the text label for the Y axis
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("COVID-19 Cases per 1M People");
+
+  var res = sumstat.map(function(d){ return d.key }); // list of group names
+
+  var color = d3.scaleOrdinal()
+    .domain(res)
+    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf']);//,'#999999']);
+
+
+  var data_lines = svg.selectAll("lines");
+
+  data_lines
+      .data(sumstat)
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key); })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){
+          return d3.line()
+            .x(function(d) { return x(new Date(d.date)); })
+            .y(function(d) { return y(+d.cases / populations[d.state] * 1000000); })
+            (d.values);
+        });
+
+
+  svg.selectAll("myDots")
+      .data(sumstat)
+      .enter()
+        .append("g")
+        .style("fill", function(d){ return color(d.key); })
+      .selectAll("mypoints")
+      .data(function(d){return d.values;})
+      .enter()
+      .append("circle")
+        .attr("cx", function(d) { return x(new Date(d.date)); } )
+        .attr("cy", function(d) { return y(d.cases / populations[d.state] * 1000000); } )
+        .attr("r", 1.5)
+        .attr("opacity", 0)
+        .attr("stroke", "white")
+        .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave);
+
+};
+
+
+function update(state_selection){
+
+  svg.selectAll("*").remove();
+
+  var state_data = the_data.filter(function(d) {return state_selection.includes(d.state);})
+
+  var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
+    .key(function(d) { return d.state;}).sortKeys(d3.ascending)//if (us_state.includes(d.state)) return d.state;})
+    .entries(state_data);
+
+
+
+  var x = d3.scaleTime()
+    .domain(d3.extent(state_data, function(d) { return new Date(d.date); }))
+    .range([ 0, width ]);
+  svg.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).ticks(5));
+
+    svg.append("text")
+        .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom) + ")")
+        .style("text-anchor", "middle")
+        .text("Date");
+
+  var y = d3.scaleLinear()
+    .domain([0, 25000])//d3.max(data, function(d) { return +d.cases; })])
+    .range([ height, 0 ]);
+  svg.append("g")
+    .call(d3.axisLeft(y));
+
+    // Add the text label for the Y axis
+    svg.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 0 - margin.left)
+        .attr("x",0 - (height / 2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("COVID-19 Cases per 1M People");
+
+  var res = sumstat.map(function(d){ return d.key }); // list of group names
+
+  var color = d3.scaleOrdinal()
+    .domain(res)
+    .range(['#e41a1c','#377eb8','#4daf4a','#984ea3','#ff7f00','#ffff33','#a65628','#f781bf']);//,'#999999']);
+
+
+  var data_lines = svg.selectAll("lines");
+
+  data_lines
+      .data(sumstat)
+      .enter()
+      .append("path")
+        .attr("fill", "none")
+        .attr("stroke", function(d){ return color(d.key); })
+        .attr("stroke-width", 1.5)
+        .attr("d", function(d){
+          return d3.line()
+            .x(function(d) { return x(new Date(d.date)); })
+            .y(function(d) { return y(+d.cases / populations[d.state] * 1000000); })
+            (d.values);
+        });
+
+
+  svg.selectAll("myDots")
+      .data(sumstat)
+      .enter()
+        .append("g")
+        .style("fill", function(d){ return color(d.key); })
+      .selectAll("mypoints")
+      .data(function(d){return d.values;})
+      .enter()
+      .append("circle")
+        .attr("cx", function(d) { return x(new Date(d.date)); } )
+        .attr("cy", function(d) { return y(d.cases / populations[d.state] * 1000000); } )
+        .attr("r", 1.5)
+        .attr("opacity", 0)
+        .attr("stroke", "white")
+        .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave);
+};
+
+
+
+
+</script>
+</body>
