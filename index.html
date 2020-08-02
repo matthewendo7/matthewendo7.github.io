@@ -59,12 +59,30 @@ div.text_box {
 <button class="pos1" onclick="update(west)">West</button>
 <button class="pos2" onclick="update(midwest)">Midwest</button>
 
-<div class="text_box">The US Federal Goverment has generally left it up to the individual states on how they wish to deal with the COVID-19 pandemic. However, political affiliations and voting patterns for members of each state have had a dramatic influence on the government policies and/or public opinion of the pandemic, which has resulted drastic differences in how individual states are performing with regards to the COVID-19 pandemic. <br><br> Utilize the buttons to see the influence of political affiliations and voting patterns from the previous presidential election has had on the how states are performing in response to the COVID-19 pandemic. Additionally, scroll over the graph to see the COVID-19 states of individual states during the pandemic.</div>
-
+<div class="text_box" id="the_text">The US Federal Goverment has generally left it up to the individual states on how they wish to deal with the COVID-19 pandemic. However, political affiliations and voting patterns for members of each state have had a dramatic influence on the government policies and/or public opinion of the pandemic, which has resulted drastic differences in how individual states are performing with regards to the COVID-19 pandemic. <br><br> Utilize the buttons to see the influence of political affiliations and voting patterns from the previous presidential election has had on the how states are performing in response to the COVID-19 pandemic. Additionally, scroll over the graph to see the COVID-19 states of individual states during the pandemic.</div>
+-->
 <body onload='init()'>
 
 
 <script>
+
+const pop_density = {'Alabama': 94.4, 'Alaska': 1.2, 'Arizona': 56.3, 'Arkansas': 56.0, 'California': 239.1, 'Colorado': 48.5, 'Connecticut': 738.1, 'Delaware': 460.8, 'District of Columbia': 9856.5, 'Florida': 350.6, 'Georgia': 168.4, 'Hawaii': 211.8, 'Idaho': 19.0, 'Illinois': 231.1, 'Indiana': 181.0, 'Iowa': 54.5, 'Kansas': 34.9, 'Kentucky': 109.9, 'Louisiana': 104.9, 'Maine': 43.1, 'Maryland': 594.8, 'Massachusetts': 839.4, 'Michigan': 174.8, 'Minnesota': 66.6, 'Mississippi': 63.2, 'Missouri': 87.1, 'Montana': 6.8, 'Nebraska': 23.8, 'Nevada': 24.6, 'New Hampshire': 147.0, 'New Jersey': 1195.5, 'New Mexico': 17.0, 'New York': 411.2, 'North Carolina': 196.1, 'North Dakota': 9.7, 'Ohio': 282.3, 'Oklahoma': 54.7, 'Oregon': 39.9, 'Pennsylvania': 283.9, 'Rhode Island': 1018.1, 'South Carolina': 153.9, 'South Dakota': 10.7, 'Tennessee': 153.9, 'Texas': 96.3, 'Utah': 33.6, 'Vermont': 67.9, 'Virginia': 202.6, 'Washington': 101.2, 'West Virginia': 77.1, 'Wisconsin': 105.0, 'Wyoming': 5.8, 'Puerto Rico': 1088.2};
+
+const populations = {'United States': 328239523, 'Northeast Region': 55982803, 'Midwest Region': 68329004, 'South Region': 125580448, 'West Region': 78347268, 'Alabama': 4903185, 'Alaska': 731545, 'Arizona': 7278717, 'Arkansas': 3017804, 'California': 39512223, 'Colorado': 5758736, 'Connecticut': 3565287, 'Delaware': 973764, 'District of Columbia': 705749, 'Florida': 21477737, 'Georgia': 10617423, 'Hawaii': 1415872, 'Idaho': 1787065, 'Illinois': 12671821, 'Indiana': 6732219, 'Iowa': 3155070, 'Kansas': 2913314, 'Kentucky': 4467673, 'Louisiana': 4648794, 'Maine': 1344212, 'Maryland': 6045680, 'Massachusetts': 6892503, 'Michigan': 9986857, 'Minnesota': 5639632, 'Mississippi': 2976149, 'Missouri': 6137428, 'Montana': 1068778, 'Nebraska': 1934408, 'Nevada': 3080156, 'New Hampshire': 1359711, 'New Jersey': 8882190, 'New Mexico': 2096829, 'New York': 19453561, 'North Carolina': 10488084, 'North Dakota': 762062, 'Ohio': 11689100, 'Oklahoma': 3956971, 'Oregon': 4217737, 'Pennsylvania': 12801989, 'Rhode Island': 1059361, 'South Carolina': 5148714, 'South Dakota': 884659, 'Tennessee': 6829174, 'Texas': 28995881, 'Utah': 3205958, 'Vermont': 623989, 'Virginia': 8535519, 'Washington': 7614893, 'West Virginia': 1792147, 'Wisconsin': 5822434, 'Wyoming': 578759, 'Puerto Rico': 3193694};
+
+const us_state = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kentucky', 'Maryland', 'Massachusetts', 'Mississippi', 'Missouri', 'Nebraska', 'New Hampshire', 'North Dakota', 'Ohio', 'Oklahoma', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Wyoming',
+                  'California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Kansas', 'Louisiana', 'Maine', 'Michigan', 'Minnesota', 'Montana', 'Nevada', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'Oregon', 'Pennsylvania', 'Rhode Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'District of Columbia'];
+const rep_gov = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kentucky', 'Maryland', 'Massachusetts', 'Mississippi', 'Missouri', 'Nebraska', 'New Hampshire', 'North Dakota', 'Ohio', 'Oklahoma', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Wyoming'];
+const dem_gov = ['California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Kansas', 'Louisiana', 'Maine', 'Michigan', 'Minnesota', 'Montana', 'Nevada', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'Oregon', 'Pennsylvania', 'Rhode Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'District of Columbia']
+
+const rep_pres = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Michigan', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Pennsylvania', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'West Virginia', 'Wisconsin', 'Wyoming'];
+const dem_pres = ['California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Maine', 'Maryland', 'Massachusetts', 'Minnesota', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'Oregon', 'Rhode Island', 'Vermont', 'Virginia', 'Washington', 'District of Columbia']
+
+const northeast = ['Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania', 'Rhode Island', 'Vermont']
+const south = ['District of Columbia', 'Alabama', 'Arkansas', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Maryland', 'Mississippi', 'North Carolina', 'Oklahoma', 'South Carolina', 'Tennessee', 'Texas', 'Virginia', 'West Virginia']
+const midwest = ['Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin']
+const west = ['Alaska', 'Arizona', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'New Mexico', 'Oregon', 'Utah', 'Washington', 'Wyoming']
+
 
 //set the dimensions and margins of the graph
 var margin = {top: 10, right: 30, bottom: 30, left: 60},
@@ -92,7 +110,8 @@ var svg = d3.select("#my_dataviz")
     .style("padding", "5px")
     .style("width", ("200px"))
     .style("position", "absolute")
-    //.style("left", "25px")
+
+
 
   // Three function that change the tooltip when user hover / move / leave a cell
   var mouseover = function(d) {
@@ -106,7 +125,10 @@ var svg = d3.select("#my_dataviz")
     Tooltip
       .html(function() {return "State: " + d.state + "<br>" +
                                "Date: " + d.date + "<br>" +
-                               "Cases: " + d.cases;})
+                               "Cases: " + d.cases + "<br>" +
+                               "Cases per 1M: " + (d.cases/populations[d.state]*1000000).toFixed(1) + "<br>" +
+                               "Population: " + populations[d.state] + "<br>" +
+                               "Pop. Density: " + pop_density[d.state] + " ppl per sq mile";})
       .style("left", (d3.mouse(this)[0]+70) + "px")
       .style("top", (d3.mouse(this)[1]) + "px")
   }
@@ -120,22 +142,6 @@ var svg = d3.select("#my_dataviz")
 
  var the_data;
 
-  const pop_density = {'Alabama': 94.4, 'Alaska': 1.2, 'Arizona': 56.3, 'Arkansas': 56.0, 'California': 239.1, 'Colorado': 48.5, 'Connecticut': 738.1, 'Delaware': 460.8, 'District of Columbia': 9856.5, 'Florida': 350.6, 'Georgia': 168.4, 'Hawaii': 211.8, 'Idaho': 19.0, 'Illinois': 231.1, 'Indiana': 181.0, 'Iowa': 54.5, 'Kansas': 34.9, 'Kentucky': 109.9, 'Louisiana': 104.9, 'Maine': 43.1, 'Maryland': 594.8, 'Massachusetts': 839.4, 'Michigan': 174.8, 'Minnesota': 66.6, 'Mississippi': 63.2, 'Missouri': 87.1, 'Montana': 6.8, 'Nebraska': 23.8, 'Nevada': 24.6, 'New Hampshire': 147.0, 'New Jersey': 1195.5, 'New Mexico': 17.0, 'New York': 411.2, 'North Carolina': 196.1, 'North Dakota': 9.7, 'Ohio': 282.3, 'Oklahoma': 54.7, 'Oregon': 39.9, 'Pennsylvania': 283.9, 'Rhode Island': 1018.1, 'South Carolina': 153.9, 'South Dakota': 10.7, 'Tennessee': 153.9, 'Texas': 96.3, 'Utah': 33.6, 'Vermont': 67.9, 'Virginia': 202.6, 'Washington': 101.2, 'West Virginia': 77.1, 'Wisconsin': 105.0, 'Wyoming': 5.8, 'Puerto Rico': 1088.2};
-
-  const populations = {'United States': 328239523, 'Northeast Region': 55982803, 'Midwest Region': 68329004, 'South Region': 125580448, 'West Region': 78347268, 'Alabama': 4903185, 'Alaska': 731545, 'Arizona': 7278717, 'Arkansas': 3017804, 'California': 39512223, 'Colorado': 5758736, 'Connecticut': 3565287, 'Delaware': 973764, 'District of Columbia': 705749, 'Florida': 21477737, 'Georgia': 10617423, 'Hawaii': 1415872, 'Idaho': 1787065, 'Illinois': 12671821, 'Indiana': 6732219, 'Iowa': 3155070, 'Kansas': 2913314, 'Kentucky': 4467673, 'Louisiana': 4648794, 'Maine': 1344212, 'Maryland': 6045680, 'Massachusetts': 6892503, 'Michigan': 9986857, 'Minnesota': 5639632, 'Mississippi': 2976149, 'Missouri': 6137428, 'Montana': 1068778, 'Nebraska': 1934408, 'Nevada': 3080156, 'New Hampshire': 1359711, 'New Jersey': 8882190, 'New Mexico': 2096829, 'New York': 19453561, 'North Carolina': 10488084, 'North Dakota': 762062, 'Ohio': 11689100, 'Oklahoma': 3956971, 'Oregon': 4217737, 'Pennsylvania': 12801989, 'Rhode Island': 1059361, 'South Carolina': 5148714, 'South Dakota': 884659, 'Tennessee': 6829174, 'Texas': 28995881, 'Utah': 3205958, 'Vermont': 623989, 'Virginia': 8535519, 'Washington': 7614893, 'West Virginia': 1792147, 'Wisconsin': 5822434, 'Wyoming': 578759, 'Puerto Rico': 3193694};
-
-  const us_state = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kentucky', 'Maryland', 'Massachusetts', 'Mississippi', 'Missouri', 'Nebraska', 'New Hampshire', 'North Dakota', 'Ohio', 'Oklahoma', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Wyoming',
-                    'California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Kansas', 'Louisiana', 'Maine', 'Michigan', 'Minnesota', 'Montana', 'Nevada', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'Oregon', 'Pennsylvania', 'Rhode Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'District of Columbia'];
-  const rep_gov = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kentucky', 'Maryland', 'Massachusetts', 'Mississippi', 'Missouri', 'Nebraska', 'New Hampshire', 'North Dakota', 'Ohio', 'Oklahoma', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont', 'Wyoming'];
-  const dem_gov = ['California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Kansas', 'Louisiana', 'Maine', 'Michigan', 'Minnesota', 'Montana', 'Nevada', 'New Jersey', 'New Mexico', 'New York', 'North Carolina', 'Oregon', 'Pennsylvania', 'Rhode Island', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'District of Columbia']
-
-  const rep_pres = ['Alabama', 'Alaska', 'Arizona', 'Arkansas', 'Florida', 'Georgia', 'Idaho', 'Indiana', 'Iowa', 'Kansas', 'Kentucky', 'Louisiana', 'Michigan', 'Mississippi', 'Missouri', 'Montana', 'Nebraska', 'North Carolina', 'North Dakota', 'Ohio', 'Oklahoma', 'Pennsylvania', 'South Carolina', 'South Dakota', 'Tennessee', 'Texas', 'Utah', 'West Virginia', 'Wisconsin', 'Wyoming'];
-  const dem_pres = ['California', 'Colorado', 'Connecticut', 'Delaware', 'Hawaii', 'Illinois', 'Maine', 'Maryland', 'Massachusetts', 'Minnesota', 'Nevada', 'New Hampshire','New Jersey', 'New Mexico', 'New York', 'Oregon', 'Rhode Island', 'Vermont', 'Virginia', 'Washington', 'District of Columbia']
-
-  const northeast = ['Connecticut', 'Maine', 'Massachusetts', 'New Hampshire', 'New Jersey', 'New York', 'Pennsylvania', 'Rhode Island', 'Vermont']
-  const south = ['District of Columbia', 'Alabama', 'Arkansas', 'Delaware', 'District of Columbia', 'Florida', 'Georgia', 'Kentucky', 'Louisiana', 'Maryland', 'Mississippi', 'North Carolina', 'Oklahoma', 'South Carolina', 'Tennessee', 'Texas', 'Virginia', 'West Virginia']
-  const midwest = ['Illinois', 'Indiana', 'Iowa', 'Kansas', 'Michigan', 'Minnesota', 'Missouri', 'Nebraska', 'North Dakota', 'Ohio', 'South Dakota', 'Wisconsin']
-  const west = ['Alaska', 'Arizona', 'California', 'Colorado', 'Hawaii', 'Idaho', 'Montana', 'Nevada', 'New Mexico', 'Oregon', 'Utah', 'Washington', 'Wyoming']
 
 async function init () {
   const data = await d3.csv(
@@ -226,6 +232,8 @@ async function init () {
 
 function update(state_selection){
 
+//if (state_selection == dem_gov) {svg.select(#text_box).text("hello");};
+
   svg.selectAll("*").remove();
 
   var state_data = the_data.filter(function(d) {return state_selection.includes(d.state);})
@@ -233,6 +241,8 @@ function update(state_selection){
   var sumstat = d3.nest() // nest function allows to group the calculation per level of a factor
     .key(function(d) { return d.state;}).sortKeys(d3.ascending)//if (us_state.includes(d.state)) return d.state;})
     .entries(state_data);
+
+
 
 
 
@@ -304,6 +314,44 @@ function update(state_selection){
         .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave);
+
+    if (state_selection === us_state){
+      d3.select("#the_text")
+      .text("The US Federal Goverment has generally left it up to the individual states on how they wish to deal with the COVID-19 pandemic. However, political affiliations and voting patterns for members of each state have had a dramatic influence on the government policies and/or public opinion of the pandemic, which has resulted drastic differences in how individual states are performing with regards to the COVID-19 pandemic. \n \n Utilize the buttons to see the influence of political affiliations and voting patterns from the previous presidential election has had on the how states are performing in response to the COVID-19 pandemic. Additionally, scroll over the graph to see the COVID-19 states of individual states during the pandemic.");
+  }
+    else if (state_selection === dem_gov){
+      d3.select("#the_text")
+      .text("States with Democrat governors were amongst the earliest to be hit by the COVID-19 pandemic. Many of those hit early were states with higher population density, which may have contributed to their initial spread. However, these states have generally seen more government intervention in forms of shutdowns, promotion of mask-wearing, etc. This may have had a significant effect in reducing the spread of COVID-19 more recently. In general, Democrat governors have had positive poll numbers with how they are handling the COVID-19 pandemic in their respective states.");
+  }
+    else if (state_selection === rep_gov){
+      d3.select("#the_text")
+      .text("States with Republican governors generally had fewer cases in the early stages of the COVID-19 pandemic. This may be partially due to the lower population density in these states. However, in the last month, the cases have begun to increase exponentially. Many of these states have already opened a large number of their business and public areas, have seen less promotion for mask-wearing, etc. With these exponentially increasing number of cases, public polls for the Republican governors have generally been negative for their handling of the COVID-19 pandemic.");
+}
+    else if (state_selection === dem_pres){
+      d3.select("#the_text")
+      .text("States that voted for Hillary Clinton in the 2016 election have generally seen the growth in number of COVID-19 cases drop off over time during this pandemic. Several of these states were part of the intial rise in cases in the US as they were highly dense urban areas. However, many of these states have limited the growth in cases. The citizens in these states have been generally been skeptical of President Trump's attitude towards the pandemic and have been more prone to follow the guidelines of medical experts such as Dr. Fauci.");
+    }
+    else if (state_selection === rep_pres){
+      d3.select("#the_text")
+      .text("States that voted for Donald Trump in the 2016 election have generally seen exponential growth in their cases since June. Many of these states have low population densities, which helped to prevent the initial spread. However, President Trump has publicly downplayed the severity of the pandemic, discouraged the use of masks, and encouraged the reopening of businesses. Many of President Trump's supporters have followed his lead and the states that voted for President Trump in 2016 are seeing exponential growth in cases despite the low population density. This could be attributed to lax attitude in regards to the pandemic amongst President Trump's supporters.");
+    }
+    else if (state_selection === northeast){
+      d3.select("#the_text")
+      .text("The densely populated Northeast States were amongst the earliest states to be hit by the COVID-19 pandemic. Following the initial spike of cases, the rate of new cases has slowed down tremendously with much of the region shutting down businesses and public gathering areas. Generally, these states have a Democrat governor and/or voted for Hillary Clinton in the 2016 election.");
+  }
+    else if (state_selection === south){
+      d3.select("#the_text")
+      .text("The Southern States had fewer cases at the onset of the COVID-19 pandemic. Since June, the number of cases have continued to increase exponentially. Many of these states began reopening up businesses in May or June and the number of cases have surged since then. Generally, these states have a Republican governor and/or voted for Donald Trump in the 2016 election.");
+}
+    else if (state_selection === west){
+      d3.select("#the_text")
+      .text("The Western States had fewer cases in the early stages of the COVID-19 pandemic. However, the number of cases have seen a substantial rise since reopening of businesses in June. The Western States are a mix of Democrat and Republican Governors and were also split fairly evenly with how they voted in the 2016 elections.");
+    }
+    else if (state_selection === midwest){
+      d3.select("#the_text")
+      .text("The less densely populated Midwest States have seen cases rise gradually throughout the COVID-19 pandemic. Some of the states did not even enact Safer-at-Home orders. However, the population density of these states may have kept the rise in cases to be fairly linear. Generally, these states have a Republican governor and/or voted for Donald Trump in the 2016 election.");
+    }
+  ;
 };
 
 
